@@ -433,7 +433,7 @@
     </div>
 <div class="card">
       <span class="card-icon">🍜</span>
-      <h3>食堂与美食</h3>
+<h3><a href="food.html" style="text-decoration: none; color: inherit;">食堂与美食</a></h3>
       <p>各大食堂测评、校外周边美食探店，填饱肚子才能更好地追梦。</p>
     </div>
 <div class="card">
