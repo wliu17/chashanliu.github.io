@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Travel Notes from Rongmei (Rongmei Jiyou) - English Translation and Hefeng Tourism Promotion" />
+  <title>Rongmei Jiyou · Hefeng Tourism</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=ZCOOL+XiaoWei&family=Noto+Serif+SC:wght@400;600&family=Lora:ital@0;1&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green-deep:   #042C1A;
+      --green-dark:   #085041;
+      --green-mid:    #0F6E56;
+      --green-bright: #1D9E75;
+      --green-light:  #9FE1CB;
+      --green-pale:   #E1F5EE;
+      --ink:          #1a2e25;
+      --ink-muted:    #4a6558;
+      --cream:        #f7f3ec;
+      --gold:         #c8a84b;
+      --warm-red:     #c0392b;
+      --warm-orange:  #e67e22;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--cream);
+      color: var(--ink);
+      font-family: 'Noto Serif SC', 'STSong', serif;
+      line-height: 1.8;
+      overflow-x: hidden;
+    }
+
+    /* ── DISCLAIMER ── */
+    .disclaimer {
+      background: #fffbe6;
+      border-bottom: 1px solid #e6d87a;
+      text-align: center;
+      padding: 0.55rem 1.5rem;
+      font-size: 0.8rem;
+      color: #7a6200;
+      letter-spacing: 0.04em;
+    }
+
+    /* ── HEADER ── */
+    header {
+      position: relative;
+      background: linear-gradient(160deg, #062d1d 0%, #0a4434 50%, #0f5e48 100%);
+      overflow: hidden;
+      padding: 4rem 1.5rem 5rem;
+      text-align: center;
+    }
+
+    header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        repeating-linear-gradient(90deg,
+          rgba(255,255,255,0.025) 0px, rgba(255,255,255,0.025) 1px,
+          transparent 1px, transparent 60px);
+      pointer-events: none;
+    }
+
+    .site-brand {
+      font-family: 'ZCOOL XiaoWei', serif;
+      font-size: clamp(0.8rem, 2vw, 0.95rem);
+      letter-spacing: 0.3em;
+      color: var(--green-light);
+      opacity: 0.6;
+      margin-bottom: 1rem;
+      animation: fadeDown 0.7s ease both;
+    }
+
+    .site-brand a { color: inherit; text-decoration: none; }
+    .site-brand a:hover { opacity: 1; }
+
+    .page-title {
+      font-family: 'ZCOOL XiaoWei', serif;
+      font-size: clamp(2rem, 6vw, 3.2rem);
+      font-weight: 400;
+      color: #fff;
+      letter-spacing: 0.12em;
+      animation: fadeUp 0.9s ease 0.1s both;
+      text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+
+    .page-subtitle {
+      font-family: 'Lora', Georgia, serif;
+      font-style: italic;
+      font-size: clamp(0.75rem, 2vw, 0.9rem);
+      letter-spacing: 0.2em;
+      color: var(--green-light);
+      opacity: 0.7;
+      margin-top: 0.8rem;
+      animation: fadeUp 0.9s ease 0.25s both;
+    }
+
+    /* ── NAV ── */
+    nav {
+      background: var(--green-dark);
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    nav ul {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      list-style: none;
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    nav ul li a {
+      display: block;
+      padding: 0.85rem 1.4rem;
+      font-family: 'ZCOOL XiaoWei', serif;
+      font-size: 1rem;
+      color: var(--green-pale);
+      text-decoration: none;
+      letter-spacing: 0.1em;
+      opacity: 0.8;
+      transition: opacity 0.2s, color 0.2s;
+      position: relative;
+    }
+
+    nav ul li a::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 50%; right: 50%;
+      height: 2px;
+      background: var(--gold);
+      transition: left 0.25s, right 0.25s;
+    }
+
+    nav ul li a:hover,
+    nav ul li a.active { opacity: 1; color: #fff; }
+    nav ul li a:hover::after,
+    nav ul li a.active::after { left: 1rem; right: 1rem; }
+
+    /* ── INTRO ── */
+    .intro {
+      max-width: 800px;
+      margin: 3.5rem auto 0;
+      padding: 0 1.5rem;
+      text-align: center;
+      animation: fadeUp 0.8s ease 0.2s both;
+    }
+
+    .intro-eyebrow {
+      font-family: 'Lora', serif;
+      font-style: italic;
+      font-size: 0.85rem;
+      letter-spacing: 0.2em;
+      color: var(--green-mid);
+      margin-bottom: 0.6rem;
+    }
+
+    .intro p {
+      font-size: 1.05rem;
+      color: var(--ink-muted);
+      margin-bottom: 2.5rem;
+      text-align: justify;
+    }
+
+    .section-divider {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      justify-content: center;
+      margin-bottom: 3rem;
+    }
+
+    .section-divider::before,
+    .section-divider::after {
+      content: '';
+      flex: 1;
+      max-width: 100px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--green-bright));
+      opacity: 0.35;
+    }
+
+    .section-divider::after { background: linear-gradient(270deg, transparent, var(--green-bright)); }
+    .section-divider span { font-size: 1.2rem; color: var(--green-bright); opacity: 0.55; }
+
+    /* ── SECTION ── */
+    .section {
+      max-width: 1040px;
+      margin: 0 auto 4.5rem;
+      padding: 0 1.5rem;
+    }
+
+    .section-title {
+      font-family: 'ZCOOL XiaoWei', serif;
+      font-size: 1.8rem;
+      font-weight: 400;
+      color: var(--green-dark);
+      border-left: 4px solid var(--green-bright);
+      padding-left: 1rem;
+      margin-bottom: 2rem;
+      letter-spacing: 0.05em;
+    }
+
+    /* ── TRANSLATION FEATURE ── */
+    .translation-feature {
+      display: grid;
+      grid-template-columns: 1fr 1.6fr;
+      gap: 0;
+      background: #fff;
+      border-radius: 12px;
+      border: 1px solid rgba(15,110,86,0.12);
+      overflow: hidden;
+      margin-bottom: 3rem;
+      box-shadow: 0 4px 20px rgba(8,80,65,0.06);
+    }
+
+    .translation-visual {
+      background: url('assets/images/floating_boat.jpg') center/cover no-repeat;
+      min-height: 300px;
+      position: relative;
+    }
+
+    .translation-body {
+      padding: 2.5rem 3rem;
+    }
+
+    .translation-body h3 {
+      font-family: 'ZCOOL XiaoWei', serif;
+      font-size: 1.6rem;
+      color: var(--green-deep);
+      margin-bottom: 1rem;
+    }
+
+    .translation-quote {
+      font-family: 'Lora', serif;
+      font-style: italic;
+      font-size: 1.1rem;
+      color: var(--ink);
+      border-left: 3px solid var(--gold);
+      padding-left: 1.5rem;
+      margin: 1.5rem 0;
+      line-height: 1.6;
+    }
+
+    /* ── ATTRACTIONS GRID ── */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 2rem;
+    }
+
+    .card {
+      background: #fff;
+      border: 1px solid rgba(15,110,86,0.12);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .card:hover { transform: translateY(-8px); box-shadow: 0 15px 35px rgba(8,80,65,0.12); }
+
+    .card-img {
+      height: 220px;
+      width: 100%;
+      object-fit: cover;
+    }
+
+    .card-body {
+      padding: 1.5rem;
+    }
+
+    .card-body h3 {
+      font-family: 'ZCOOL XiaoWei', serif;
+      font-size: 1.3rem;
+      color: var(--green-dark);
+      margin-bottom: 0.5rem;
+    }
+
+    .card-body p {
+      font-size: 0.9rem;
+      color: var(--ink-muted);
+    }
+
+    /* ── INFO STRIP ── */
+    .nearby-strip {
+      background: linear-gradient(135deg, var(--green-dark), var(--green-deep));
+      color: var(--green-pale);
+      padding: 4rem 1.5rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .nearby-strip h2 {
+      font-family: 'ZCOOL XiaoWei', serif;
+      font-size: 2rem;
+      margin-bottom: 2rem;
+      letter-spacing: 0.1em;
+    }
+
+    .nearby-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .nearby-item {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 30px;
+      padding: 0.6rem 1.5rem;
+      font-size: 0.95rem;
+      transition: background 0.3s;
+    }
+
+    .nearby-item:hover { background: rgba(255,255,255,0.2); }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--green-deep);
+      color: var(--green-light);
+      text-align: center;
+      padding: 3rem 1.5rem;
+      font-size: 0.9rem;
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 768px) {
+      .translation-feature { grid-template-columns: 1fr; }
+      .translation-visual { min-height: 200px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="disclaimer">
+    Explore the Hidden Paradise of Southwest Hubei — Hefeng, the Land of Rongmei
+  </div>
+
+  <header>
+    <div class="site-brand">
+      <a href="#">HEFENG · RONGMEI JIYOU</a>
+    </div>
+    <h1 class="page-title">Travel Notes from Rongmei</h1>
+    <p class="page-subtitle">A 300-Year Journey Through the "Hidden Peach Blossom Spring"</p>
+  </header>
+
+  <nav>
+    <ul>
+      <li><a href="#intro" class="active">Introduction</a></li>
+      <li><a href="#translation">Translation</a></li>
+      <li><a href="#tourism">Tourism IP</a></li>
+      <li><a href="#guide">Travel Guide</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <section id="intro" class="intro">
+      <div class="intro-eyebrow">A Literary Legacy</div>
+      <p>
+        In 1703, the renowned Qing Dynasty playwright and poet <strong>Gu Cai</strong> (顾彩) embarked on a five-month journey to the Rongmei Tusi territory (modern-day Hefeng, Hubei). Commissioned by his friend Kong Shangren, Gu Cai documented the breathtaking landscapes, unique customs, and the sophisticated Tusi administration in his masterpiece, <em><strong>Rongmei Jiyou</strong></em> (容美纪游). Today, this travelogue serves as the cultural soul of Hefeng, bridging the gap between an ancient hidden kingdom and modern-day explorers.
+      </p>
+      <div class="section-divider"><span>◈</span></div>
+    </section>
+
+    <section id="translation" class="section">
+      <h2 class="section-title">The English Translation</h2>
+      <div class="translation-feature">
+        <div class="translation-visual"></div>
+        <div class="translation-body">
+          <h3>Echoes of the Past</h3>
+          <p>
+            The English translation of <em>Rongmei Jiyou</em> brings the vibrant life of the 18th-century Wuling Mountains to a global audience. It captures Gu Cai's awe as he entered the "Hidden Peach Blossom Spring."
+          </p>
+          <div class="translation-quote">
+            "The mountains are steep and the waters clear... Entering Rongmei is like stepping into a different world, where the people are hospitable and the culture flourishes amidst the clouds."
+          </div>
+          <p>
+            Translated by scholars like <strong>Hans Steinmüller</strong>, the work highlights the "total society" of the Tusi era, where Han literati and local Tujia traditions merged to create a unique cultural synthesis.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="tourism" class="section">
+      <h2 class="section-title">Hefeng Tourism IP Promotion</h2>
+      <div class="card-grid">
+        <div class="card">
+          <img src="assets/images/floating_boat.jpg" alt="Pingshan Canyon" class="card-img">
+          <div class="card-body">
+            <h3>Pingshan Canyon</h3>
+            <p>Known as the "Semporna of China," its crystal-clear waters create the illusion of boats floating in mid-air. A core landmark of the Rongmei IP.</p>
+          </div>
+        </div>
+        <div class="card">
+          <img src="assets/images/tusi_ruins.jpg" alt="Rongmei Tusi Ruins" class="card-img">
+          <div class="card-body">
+            <h3>Rongmei Tusi Ruins</h3>
+            <p>The historical heart of the region. Explore the remains of the powerful Tusi chiefdom that once ruled these mountains for centuries.</p>
+          </div>
+        </div>
+        <div class="card">
+          <img src="assets/images/canyon_view.jpg" alt="Loushui River" class="card-img">
+          <div class="card-body">
+            <h3>Loushui River</h3>
+            <p>A serene journey through emerald waters and towering cliffs, following the very path Gu Cai took 300 years ago.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="guide" class="nearby-strip">
+      <h2>Plan Your Journey</h2>
+      <div class="nearby-list">
+        <div class="nearby-item">📍 Hefeng, Enshi, Hubei</div>
+        <div class="nearby-item">🚢 Floating Boat Experience</div>
+        <div class="nearby-item">📜 Tusi Culture Tour</div>
+        <div class="nearby-item">🍵 Enshi Yulu Tea Tasting</div>
+        <div class="nearby-item">🥾 Wuling Mountain Trekking</div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 Hefeng Cultural Tourism. Inspired by "Rongmei Jiyou" by Gu Cai.</p>
+    <div class="footer-disclaimer">
+      Promoting the English translation and cultural heritage of the Rongmei Tusi.
+    </div>
+  </footer>
+
+</body>
+</html>
