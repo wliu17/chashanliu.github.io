@@ -431,11 +431,11 @@
       <h3>学习与考研</h3>
       <p>图书馆占座攻略、考研备考经验、课程资源分享，陪你走过每一个奋斗的夜晚。</p>
     </div>
-<div class="card" onclick="window.location.href='https://chashanliu.top/food.html'" style="cursor: pointer;">
-  <span class="card-icon">🍜</span>
-  <h3>食堂与美食</h3>
-  <p>各大食堂测评、校外周边美食探店，填饱肚子才能更好地追梦。</p>
-</div>
+<div class="card">
+      <span class="card-icon">🍜</span>
+      <h3>食堂与美食</h3>
+      <p>各大食堂测评、校外周边美食探店，填饱肚子才能更好地追梦。</p>
+    </div>
 <div class="card">
       <span class="card-icon">🎉</span>
       <h3>社团与活动</h3>
