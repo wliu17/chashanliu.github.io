@@ -418,7 +418,7 @@
 <section class="hero">
   <p class="hero-eyebrow">Welcome to Chashan Hill</p>
   <h1>记录茶山刘上的每一天</h1>
-  <p>茶山刘，一座承载着无数故事的小山丘。我们记录校园里的日常，分享学习、生活与成长的点滴。</p>
+  <p>茶山刘，一座承载着无数故事的地名。我们记录校园里的日常，分享学习、生活与成长的点滴。</p>
   <div class="hero-divider"><span>✦</span></div>
 </section>
 
