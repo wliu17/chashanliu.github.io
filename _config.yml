@@ -1,0 +1,19 @@
+title: 茶山刘
+description: 校园生活记录与分享
+baseurl: ""
+url: "https://chashanliu.top"
+lang: zh-CN
+
+markdown: kramdown
+kramdown:
+  input: GFM
+
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: default
+  - scope:
+      path: "pages"
+    values:
+      layout: subpage

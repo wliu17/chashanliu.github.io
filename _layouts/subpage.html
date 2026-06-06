@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="{{ page.description | default: site.description }}" />
+  <title>{{ page.title }} · 茶山刘</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  {% include styles.html %}
+</head>
+<body>
+
+<div class="disclaimer">⚠️ 本站与任何高校官方无关，内容仅代表个人观点。</div>
+
+<div class="page-header">
+  <p class="site-brand"><a href="{{ '/' | relative_url }}">茶山刘 · chashanliu.top</a></p>
+  <h1 class="page-title">{{ page.title }}</h1>
+  {% if page.subtitle %}<p class="page-subtitle">{{ page.subtitle }}</p>{% endif %}
+</div>
+
+{% include nav.html %}
+
+<div class="page-content">
+  <a class="back-link" href="{{ '/' | relative_url }}">← 返回首页</a>
+  {{ content }}
+</div>
+
+{% include footer.html %}
+</body>
+</html>
