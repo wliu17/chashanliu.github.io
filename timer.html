@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZUEL Exam Timer</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Digital-7&display=swap');
+        
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #000;
+            font-family: 'Digital-7', sans-serif;
+            overflow: hidden;
+        }
+        
+        .timer-container {
+            text-align: center;
+            padding: 40px;
+            border: 8px solid #333;
+            border-radius: 20px;
+            background-color: #111;
+            box-shadow: 0 0 50px rgba(0, 255, 0, 0.3);
+        }
+        
+        .timer-display {
+            font-size: 18vw;
+            font-weight: bold;
+            letter-spacing: 0.05em;
+            color: #0f0;
+            text-shadow: 0 0 20px currentColor;
+            margin: 0;
+            line-height: 1;
+        }
+        
+        .label {
+            color: #aaa;
+            font-size: 2.5vw;
+            margin-top: 10px;
+            letter-spacing: 0.1em;
+        }
+        
+        .controls {
+            margin-top: 30px;
+        }
+        
+        button {
+            font-size: 1.5vw;
+            padding: 15px 30px;
+            margin: 0 10px;
+            border: none;
+            border-radius: 8px;
+            background-color: #333;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        button:hover {
+            background-color: #555;
+        }
+        
+        .start-btn { background-color: #0a0; }
+        .pause-btn { background-color: #aa0; }
+        .reset-btn { background-color: #a00; }
+        
+        .time-info {
+            color: #666;
+            font-size: 1.2vw;
+            margin-top: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .timer-display {
+                font-size: 22vw;
+            }
+            .label {
+                font-size: 4vw;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="timer-container">
+        <div id="timer" class="timer-display">120:00</div>
+        <div class="label">EXAM TIME REMAINING - ZUEL</div>
+        <div id="current-date" style="color: #555; font-size: 1.1vw; margin-top: 8px; letter-spacing: 0.05em; opacity: 0.7;"></div>
+        
+        <div class="controls">
+            <button class="start-btn" onclick="startTimer()">START</button>
+            <button class="pause-btn" onclick="pauseTimer()">PAUSE</button>
+            <button class="reset-btn" onclick="resetTimer()">RESET</button>
+        </div>
+        
+        <div class="time-info" id="status">Ready for 2-hour exam</div>
+    </div>
+
+    <script>
+        let timeLeft = 120 * 60; // 120 minutes (2 hours) in seconds
+        let timerInterval;
+        let isRunning = false;
+        
+        const timerElement = document.getElementById('timer');
+        const statusElement = document.getElementById('status');
+        
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+        
+        function updateColor() {
+            const minutesLeft = Math.floor(timeLeft / 60);
+            
+            // Color changes every ~30 minutes for 2-hour timer
+            if (minutesLeft > 90) {
+                timerElement.style.color = '#00ff00'; // Green
+                timerElement.style.textShadow = '0 0 20px #00ff00';
+            } else if (minutesLeft > 60) {
+                timerElement.style.color = '#aaff00'; // Yellow-Green
+                timerElement.style.textShadow = '0 0 20px #aaff00';
+            } else if (minutesLeft > 30) {
+                timerElement.style.color = '#ffff00'; // Yellow
+                timerElement.style.textShadow = '0 0 20px #ffff00';
+            } else if (minutesLeft > 15) {
+                timerElement.style.color = '#ff8800'; // Orange
+                timerElement.style.textShadow = '0 0 20px #ff8800';
+            } else {
+                timerElement.style.color = '#ff0000'; // Red
+                timerElement.style.textShadow = '0 0 30px #ff0000';
+            }
+        }
+        
+        function updateDisplay() {
+            timerElement.textContent = formatTime(timeLeft);
+            updateColor();
+        }
+        
+        function tick() {
+            if (timeLeft > 0) {
+                timeLeft--;
+                updateDisplay();
+                
+                if (timeLeft === 0) {
+                    clearInterval(timerInterval);
+                    isRunning = false;
+                    timerElement.style.color = '#ff0000';
+                    statusElement.textContent = 'TIME UP!';
+                    new Audio('https://www.soundjay.com/buttons/beep-07.mp3').play().catch(() => {});
+                } else if (timeLeft % 900 === 0) { // Every 15 minutes
+                    statusElement.textContent = `${Math.floor(timeLeft/60)} minutes remaining`;
+                }
+            }
+        }
+        
+        function startTimer() {
+            if (!isRunning) {
+                isRunning = true;
+                timerInterval = setInterval(tick, 1000);
+                statusElement.textContent = 'Timer running...';
+                updateDisplay();
+            }
+        }
+        
+        function pauseTimer() {
+            if (isRunning) {
+                clearInterval(timerInterval);
+                isRunning = false;
+                statusElement.textContent = 'Paused';
+            }
+        }
+        
+        function resetTimer() {
+            clearInterval(timerInterval);
+            isRunning = false;
+            timeLeft = 120 * 60;
+            updateDisplay();
+            statusElement.textContent = 'Ready for 2-hour exam';
+        }
+        
+        // Initialize
+        updateDisplay();
+        
+        // Display current date (subtle)
+        function updateDate() {
+            const dateEl = document.getElementById('current-date');
+            const now = new Date();
+            const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+            dateEl.textContent = now.toLocaleDateString('zh-CN', options);
+        }
+        updateDate();
+        setInterval(updateDate, 60000);
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.key === ' ' || e.key === 'k') {
+                e.preventDefault();
+                if (isRunning) pauseTimer();
+                else startTimer();
+            } else if (e.key === 'r') {
+                resetTimer();
+            }
+        });
+        
+        document.documentElement.style.height = '100%';
+    </script>
+</body>
+</html>
