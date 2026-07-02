@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>考场时钟 - 网络同步</title>
+    <style>
+        /* ---------- 全局重置 ---------- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(ellipse at center, #0b1120 0%, #03060c 100%);
+            font-family: 'Segoe UI', 'PingFang SC', Roboto, 'Helvetica Neue', sans-serif;
+            user-select: none;
+            padding: 20px;
+        }
+
+        /* ---------- 主容器 ---------- */
+        .clock-container {
+            position: relative;
+            width: 100%;
+            max-width: 900px;
+            padding: 40px 30px 30px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 60px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(4px);
+            text-align: center;
+            transition: border-color 0.6s ease;
+        }
+
+        /* ---------- 时间显示 ---------- */
+        .time-display {
+            font-size: clamp(80px, 18vw, 220px);
+            font-weight: 900;
+            letter-spacing: 0.04em;
+            line-height: 1.1;
+            font-variant-numeric: tabular-nums;
+            text-shadow: 0 0 40px currentColor, 0 0 80px currentColor, 0 0 120px currentColor;
+            transition: color 0.5s ease, text-shadow 0.5s ease;
+            color: #ffffff;
+            padding: 10px 0;
+        }
+
+        /* 冒号单独控制（闪烁用） */
+        .time-display .colon {
+            display: inline-block;
+            animation: blink 1.2s step-end infinite;
+            opacity: 1;
+            margin: 0 0.02em;
+        }
+
+        @keyframes blink {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.15;
+            }
+        }
+
+        /* ---------- 标签 ---------- */
+        .label {
+            font-size: clamp(20px, 3.5vw, 48px);
+            font-weight: 600;
+            letter-spacing: 0.3em;
+            color: rgba(255, 255, 255, 0.5);
+            margin-top: 6px;
+            text-transform: uppercase;
+            text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
+        }
+
+        .label span {
+            display: inline-block;
+            padding: 0 8px;
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 8px;
+        }
+
+        /* ---------- 状态栏 ---------- */
+        .status-bar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 18px;
+            margin-top: 24px;
+            font-size: clamp(13px, 1.4vw, 20px);
+            color: rgba(255, 255, 255, 0.35);
+            letter-spacing: 0.05em;
+            flex-wrap: wrap;
+        }
+
+        .status-dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 6px;
+            transition: background 0.4s ease, box-shadow 0.4s ease;
+            flex-shrink: 0;
+        }
+
+        .status-dot.synced {
+            background: #00e676;
+            box-shadow: 0 0 16px #00e67688;
+        }
+
+        .status-dot.unsynced {
+            background: #ff5252;
+            box-shadow: 0 0 16px #ff525288;
+            animation: pulse-dot 1.8s ease-in-out infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.4;
+                transform: scale(0.7);
+            }
+        }
+
+        .status-text {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .status-text .sync-label {
+            font-weight: 400;
+        }
+        .status-text .sync-value {
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* ---------- 时段指示 ---------- */
+        .segment-indicator {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 18px;
+        }
+
+        .segment-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.5s ease;
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .segment-dot.active {
+            border-color: currentColor;
+            background: currentColor;
+            box-shadow: 0 0 24px currentColor;
+            transform: scale(1.2);
+        }
+
+        /* ---------- 时间区间颜色 (通过JS动态设置) ---------- */
+        /* 默认 fallback 颜色 */
+        .clock-container {
+            border-color: rgba(255, 255, 255, 0.06);
+        }
+
+        /* ---------- 响应式微调 ---------- */
+        @media (max-width: 600px) {
+            .clock-container {
+                padding: 28px 16px 20px;
+                border-radius: 40px;
+            }
+            .time-display {
+                font-size: clamp(56px, 16vw, 100px);
+            }
+            .label {
+                font-size: clamp(16px, 4vw, 28px);
+                letter-spacing: 0.2em;
+            }
+            .status-bar {
+                font-size: clamp(11px, 2vw, 16px);
+                gap: 12px;
+            }
+            .segment-dot {
+                width: 10px;
+                height: 10px;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .clock-container {
+                padding: 20px 10px 16px;
+                border-radius: 28px;
+            }
+            .time-display {
+                font-size: clamp(40px, 14vw, 72px);
+            }
+            .status-bar {
+                flex-direction: column;
+                gap: 6px;
+            }
+        }
+
+        /* ---------- 打印样式 ---------- */
+        @media print {
+            body {
+                background: #ffffff !important;
+            }
+            .clock-container {
+                background: #ffffff !important;
+                border: 2px solid #333 !important;
+                box-shadow: none !important;
+                backdrop-filter: none !important;
+            }
+            .time-display {
+                color: #000000 !important;
+                text-shadow: none !important;
+            }
+            .label {
+                color: #666 !important;
+            }
+            .status-bar {
+                color: #999 !important;
+            }
+            .status-dot {
+                display: none !important;
+            }
+            .segment-indicator {
+                display: none !important;
+            }
+        }
+
+        /* ---------- 加载过渡 ---------- */
+        .clock-container {
+            opacity: 0;
+            transform: translateY(20px) scale(0.98);
+            animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="clock-container" id="clockContainer">
+        <!-- 时间 -->
+        <div class="time-display" id="timeDisplay">
+            <span id="hour">--</span>
+            <span class="colon">:</span>
+            <span id="minute">--</span>
+        </div>
+
+        <!-- 标签 -->
+        <div class="label">
+            <span>考 场 时 间</span>
+        </div>
+
+        <!-- 状态栏 -->
+        <div class="status-bar">
+            <div class="status-text">
+                <span class="status-dot" id="statusDot"></span>
+                <span class="sync-label">状态</span>
+                <span class="sync-value" id="statusText">同步中...</span>
+            </div>
+            <span style="opacity:0.25;">|</span>
+            <div class="status-text">
+                <span style="opacity:0.5;">更新于</span>
+                <span class="sync-value" id="lastSyncTime">--</span>
+            </div>
+        </div>
+
+        <!-- 时段指示器 (四个小圆点) -->
+        <div class="segment-indicator" id="segmentIndicator">
+            <span class="segment-dot" data-index="0"></span>
+            <span class="segment-dot" data-index="1"></span>
+            <span class="segment-dot" data-index="2"></span>
+            <span class="segment-dot" data-index="3"></span>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            'use strict';
+
+            // ---------- 配置 ----------
+            const COLORS = [
+                '#FF1744', // 0-14分  亮红
+                '#2979FF', // 15-29分 亮蓝
+                '#00E676', // 30-44分 亮绿
+                '#FF9100' // 45-59分 亮橙
+            ];
+
+            // 颜色对应的柔和版本（用于边框、阴影等）
+            const COLOR_GLOW = [
+                'rgba(255,23,68,0.25)',
+                'rgba(41,121,255,0.25)',
+                'rgba(0,230,118,0.25)',
+                'rgba(255,145,0,0.25)'
+            ];
+
+            // 时段名称（可选，用于调试）
+            const SEGMENT_NAMES = ['Ⅰ', 'Ⅱ', 'Ⅲ', 'Ⅳ'];
+
+            // API 地址（使用世界时间 API，支持 CORS）
+            const TIME_API = 'https://worldtimeapi.org/api/timezone/Asia/Shanghai';
+
+            // 同步间隔（毫秒）—— 每 10 分钟重新同步一次
+            const SYNC_INTERVAL = 10 * 60 * 1000;
+
+            // ---------- DOM 引用 ----------
+            const hourEl = document.getElementById('hour');
+            const minuteEl = document.getElementById('minute');
+            const container = document.getElementById('clockContainer');
+            const statusDot = document.getElementById('statusDot');
+            const statusText = document.getElementById('statusText');
+            const lastSyncTimeEl = document.getElementById('lastSyncTime');
+            const segmentDots = document.querySelectorAll('.segment-dot');
+
+            // ---------- 状态 ----------
+            let timeOffset = 0; // 网络时间 - 本地时间 (毫秒)
+            let isSynced = false;
+            let lastSyncTimestamp = null;
+            let syncFailCount = 0;
+            let currentColorIndex = -1;
+            let updateTimer = null;
+            let syncTimer = null;
+
+            // ---------- 辅助函数 ----------
+            function padZero(num) {
+                return String(num).padStart(2, '0');
+            }
+
+            // 获取当前网络时间 (基于本地时间 + 偏移)
+            function getNetworkTime() {
+                const now = new Date();
+                return new Date(now.getTime() + timeOffset);
+            }
+
+            // 根据分钟数获取颜色索引 (0-3)
+            function getColorIndex(minute) {
+                return Math.floor(minute / 15) % 4;
+            }
+
+            // 应用颜色到界面
+            function applyColor(index) {
+                const color = COLORS[index];
+                const glow = COLOR_GLOW[index];
+
+                // 时间数字颜色
+                const display = document.getElementById('timeDisplay');
+                display.style.color = color;
+                display.style.textShadow = `0 0 40px ${color}, 0 0 80px ${color}, 0 0 120px ${color}`;
+
+                // 容器边框发光
+                container.style.borderColor = color;
+                container.style.boxShadow =
+                    `0 30px 80px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.05), 0 0 60px ${glow}`;
+
+                // 时段指示点
+                segmentDots.forEach((dot, i) => {
+                    dot.style.color = color;
+                    if (i === index) {
+                        dot.classList.add('active');
+                        dot.style.borderColor = color;
+                        dot.style.background = color;
+                        dot.style.boxShadow = `0 0 24px ${color}`;
+                    } else {
+                        dot.classList.remove('active');
+                        dot.style.borderColor = 'rgba(255,255,255,0.08)';
+                        dot.style.background = 'rgba(255,255,255,0.04)';
+                        dot.style.boxShadow = 'none';
+                    }
+                });
+
+                currentColorIndex = index;
+            }
+
+            // 更新时间显示
+            function updateDisplay() {
+                const netTime = getNetworkTime();
+                const hours = netTime.getHours();
+                const minutes = netTime.getMinutes();
+
+                hourEl.textContent = padZero(hours);
+                minuteEl.textContent = padZero(minutes);
+
+                // 检查颜色是否需要变化
+                const newIndex = getColorIndex(minutes);
+                if (newIndex !== currentColorIndex) {
+                    applyColor(newIndex);
+                }
+            }
+
+            // ---------- 同步网络时间 ----------
+            async function syncTime() {
+                try {
+                    const response = await fetch(TIME_API, {
+                        signal: AbortSignal.timeout(8000) // 8秒超时
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}`);
+                    }
+
+                    const data = await response.json();
+
+                    // 使用 unixtime (秒) 转换为毫秒
+                    if (typeof data.unixtime !== 'number') {
+                        throw new Error('无效的响应数据');
+                    }
+
+                    const networkTime = new Date(data.unixtime * 1000);
+                    const localTime = new Date();
+                    timeOffset = networkTime.getTime() - localTime.getTime();
+
+                    isSynced = true;
+                    syncFailCount = 0;
+                    lastSyncTimestamp = new Date();
+
+                    // 更新状态显示
+                    statusDot.className = 'status-dot synced';
+                    statusText.textContent = '网络同步';
+                    lastSyncTimeEl.textContent = lastSyncTimestamp.toLocaleTimeString('zh-CN', { hour12: false });
+
+                    // 立即刷新显示
+                    updateDisplay();
+
+                    console.log(`✅ 时间同步成功，偏移: ${timeOffset}ms`);
+
+                } catch (error) {
+                    console.warn('⚠️ 时间同步失败:', error.message);
+                    syncFailCount++;
+
+                    // 如果从未同步成功，使用本地时间
+                    if (!isSynced) {
+                        timeOffset = 0;
+                        statusDot.className = 'status-dot unsynced';
+                        statusText.textContent = '本地时间 (同步失败)';
+                        lastSyncTimeEl.textContent = '--';
+                        updateDisplay();
+                    } else {
+                        // 已经同步过，只是本次刷新失败
+                        statusDot.className = 'status-dot synced';
+                        statusText.textContent = '网络同步 (刷新中)';
+                    }
+
+                    // 如果连续失败 5 次，降低同步频率
+                    if (syncFailCount >= 5) {
+                        console.warn('⚠️ 连续同步失败，降低同步频率');
+                        // 通过清除并重新设置定时器来调整
+                        if (syncTimer) {
+                            clearInterval(syncTimer);
+                            syncTimer = setInterval(syncTime, SYNC_INTERVAL * 2);
+                        }
+                    }
+                }
+            }
+
+            // ---------- 初始化 ----------
+            async function init() {
+                // 1. 立即显示本地时间（占位）
+                const localNow = new Date();
+                hourEl.textContent = padZero(localNow.getHours());
+                minuteEl.textContent = padZero(localNow.getMinutes());
+                const initIndex = getColorIndex(localNow.getMinutes());
+                applyColor(initIndex);
+
+                // 2. 状态显示
+                statusDot.className = 'status-dot unsynced';
+                statusText.textContent = '同步中...';
+                lastSyncTimeEl.textContent = '--';
+
+                // 3. 首次同步
+                await syncTime();
+
+                // 4. 启动定时更新 (每秒刷新显示)
+                if (updateTimer) clearInterval(updateTimer);
+                updateTimer = setInterval(updateDisplay, 1000);
+
+                // 5. 启动定期同步 (每 SYNC_INTERVAL 毫秒)
+                if (syncTimer) clearInterval(syncTimer);
+                syncTimer = setInterval(syncTime, SYNC_INTERVAL);
+
+                // 6. 页面可见性变化时，立即刷新一次
+                document.addEventListener('visibilitychange', () => {
+                    if (!document.hidden) {
+                        updateDisplay();
+                        // 如果页面长时间隐藏，可能时间偏移较大，做一次快速同步
+                        if (isSynced && lastSyncTimestamp) {
+                            const elapsed = Date.now() - lastSyncTimestamp.getTime();
+                            if (elapsed > SYNC_INTERVAL * 1.5) {
+                                syncTime();
+                            }
+                        }
+                    }
+                });
+
+                console.log('🕐 考场时钟已启动');
+            }
+
+            // ---------- 启动 ----------
+            // 等待 DOM 完全加载
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', init);
+            } else {
+                init();
+            }
+
+            // ---------- 暴露 API 方便调试 ----------
+            window.__clock = {
+                syncTime,
+                getNetworkTime,
+                getColorIndex,
+                applyColor,
+                COLORS,
+                timeOffset,
+                isSynced: () => isSynced
+            };
+
+        })();
+    </script>
+
+</body>
+</html>
