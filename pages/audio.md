@@ -31,42 +31,42 @@ description: 茶山刘音频合集，收录9段音频，支持在线收听，随
     <a class="dl" href="{{ '/assets/audio/audio-01.mp3' | relative_url }}" download>下载 MP3</a>
   </div>
   <div class="audio-card" id="audio-02">
-    <div class="head"><span class="no">02</span><span class="name">音频 02（请改为标题）</span><span class="dur">1:30 · 3.4 MB</span></div>
+    <div class="head"><span class="no">02</span><span class="name">南湖大道FM02</span><span class="dur">1:30 · 3.4 MB</span></div>
     <audio controls preload="none" src="{{ '/assets/audio/audio-02.mp3' | relative_url }}"></audio>
     <a class="dl" href="{{ '/assets/audio/audio-02.mp3' | relative_url }}" download>下载 MP3</a>
   </div>
   <div class="audio-card" id="audio-03">
-    <div class="head"><span class="no">03</span><span class="name">音频 03（请改为标题）</span><span class="dur">7:19 · 11.8 MB</span></div>
+    <div class="head"><span class="no">03</span><span class="name">南湖大道FM03</span><span class="dur">7:19 · 11.8 MB</span></div>
     <audio controls preload="none" src="{{ '/assets/audio/audio-03.mp3' | relative_url }}"></audio>
     <a class="dl" href="{{ '/assets/audio/audio-03.mp3' | relative_url }}" download>下载 MP3</a>
   </div>
   <div class="audio-card" id="audio-04">
-    <div class="head"><span class="no">04</span><span class="name">音频 04（请改为标题）</span><span class="dur">4:24 · 5.5 MB</span></div>
+    <div class="head"><span class="no">04</span><span class="name">南湖大道FM04</span><span class="dur">4:24 · 5.5 MB</span></div>
     <audio controls preload="none" src="{{ '/assets/audio/audio-04.mp3' | relative_url }}"></audio>
     <a class="dl" href="{{ '/assets/audio/audio-04.mp3' | relative_url }}" download>下载 MP3</a>
   </div>
   <div class="audio-card" id="audio-05">
-    <div class="head"><span class="no">05</span><span class="name">音频 05（请改为标题）</span><span class="dur">2:26 · 3.5 MB</span></div>
+    <div class="head"><span class="no">05</span><span class="name">南湖大道FM05</span><span class="dur">2:26 · 3.5 MB</span></div>
     <audio controls preload="none" src="{{ '/assets/audio/audio-05.mp3' | relative_url }}"></audio>
     <a class="dl" href="{{ '/assets/audio/audio-05.mp3' | relative_url }}" download>下载 MP3</a>
   </div>
   <div class="audio-card" id="audio-06">
-    <div class="head"><span class="no">06</span><span class="name">音频 06（请改为标题）</span><span class="dur">3:21 · 7.7 MB</span></div>
+    <div class="head"><span class="no">06</span><span class="name">南湖大道FM06</span><span class="dur">3:21 · 7.7 MB</span></div>
     <audio controls preload="none" src="{{ '/assets/audio/audio-06.mp3' | relative_url }}"></audio>
     <a class="dl" href="{{ '/assets/audio/audio-06.mp3' | relative_url }}" download>下载 MP3</a>
   </div>
   <div class="audio-card" id="audio-07">
-    <div class="head"><span class="no">07</span><span class="name">音频 07（请改为标题）</span><span class="dur">2:49 · 3.9 MB</span></div>
+    <div class="head"><span class="no">07</span><span class="name">南湖大道FM07</span><span class="dur">2:49 · 3.9 MB</span></div>
     <audio controls preload="none" src="{{ '/assets/audio/audio-07.mp3' | relative_url }}"></audio>
     <a class="dl" href="{{ '/assets/audio/audio-07.mp3' | relative_url }}" download>下载 MP3</a>
   </div>
   <div class="audio-card" id="audio-08">
-    <div class="head"><span class="no">08</span><span class="name">音频 08（请改为标题）</span><span class="dur">1:07 · 1.6 MB</span></div>
+    <div class="head"><span class="no">08</span><span class="name">南湖大道FM08</span><span class="dur">1:07 · 1.6 MB</span></div>
     <audio controls preload="none" src="{{ '/assets/audio/audio-08.mp3' | relative_url }}"></audio>
     <a class="dl" href="{{ '/assets/audio/audio-08.mp3' | relative_url }}" download>下载 MP3</a>
   </div>
   <div class="audio-card" id="audio-09">
-    <div class="head"><span class="no">09</span><span class="name">音频 09（请改为标题）</span><span class="dur">2:46 · 3.9 MB</span></div>
+    <div class="head"><span class="no">09</span><span class="name">南湖大道FM09</span><span class="dur">2:46 · 3.9 MB</span></div>
     <audio controls preload="none" src="{{ '/assets/audio/audio-09.mp3' | relative_url }}"></audio>
     <a class="dl" href="{{ '/assets/audio/audio-09.mp3' | relative_url }}" download>下载 MP3</a>
   </div>
