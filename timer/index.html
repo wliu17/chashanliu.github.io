@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>考场监考信息显示</title>
+    <style>
+        /* ===== 全局重置 & 基础 ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', 'PingFang SC', Roboto, 'Helvetica Neue', sans-serif;
+            background: radial-gradient(ellipse at center, #0d1238 0%, #070a1f 100%);
+            padding: 20px;
+            user-select: none;
+        }
+
+        /* ===== 主卡片 ===== */
+        .dashboard {
+            max-width: 820px;
+            width: 100%;
+            background: rgba(18, 26, 67, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 48px;
+            padding: 40px 44px 44px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8), inset 0 1px 2px rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.2s;
+        }
+
+        /* ===== 头部 ===== */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+            padding-bottom: 18px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-title .icon {
+            font-size: 28px;
+            line-height: 1;
+        }
+
+        .header-title h1 {
+            font-size: 22px;
+            font-weight: 600;
+            color: #eef2ff;
+            letter-spacing: 2px;
+            text-shadow: 0 2px 10px rgba(0, 100, 255, 0.15);
+        }
+
+        .header-badge {
+            background: rgba(0, 212, 255, 0.12);
+            border: 1px solid rgba(0, 212, 255, 0.20);
+            border-radius: 40px;
+            padding: 6px 18px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #8ab4f8;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .header-badge .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #00d4ff;
+            display: inline-block;
+            animation: pulse-dot 1.8s ease-in-out infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.3;
+                transform: scale(0.7);
+            }
+        }
+
+        /* ===== 计时器区域 ===== */
+        .timer-section {
+            text-align: center;
+            padding: 20px 0 10px;
+            position: relative;
+        }
+
+        .timer-label {
+            font-size: 15px;
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.45);
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+
+        .timer-display {
+            font-size: 120px;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: 6px;
+            line-height: 1.2;
+            transition: color 0.5s ease, text-shadow 0.5s ease;
+            color: #00d4ff;
+            text-shadow: 0 0 40px rgba(0, 212, 255, 0.25), 0 0 80px rgba(0, 212, 255, 0.08);
+            position: relative;
+            display: inline-block;
+            padding: 0 10px;
+            font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+        }
+
+        /* 时间数字颜色状态 */
+        .timer-display.state-normal {
+            color: #00d4ff;
+            text-shadow: 0 0 40px rgba(0, 212, 255, 0.30), 0 0 80px rgba(0, 212, 255, 0.10);
+        }
+
+        .timer-display.state-warning {
+            color: #ff8c00;
+            text-shadow: 0 0 50px rgba(255, 140, 0, 0.40), 0 0 100px rgba(255, 140, 0, 0.15);
+            animation: glow-warning 1.2s ease-in-out infinite alternate;
+        }
+
+        .timer-display.state-ended {
+            color: #ff1744;
+            text-shadow: 0 0 60px rgba(255, 23, 68, 0.60), 0 0 120px rgba(255, 23, 68, 0.25);
+            animation: glow-ended 0.6s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow-warning {
+            0% {
+                text-shadow: 0 0 40px rgba(255, 140, 0, 0.30), 0 0 80px rgba(255, 140, 0, 0.08);
+            }
+            100% {
+                text-shadow: 0 0 70px rgba(255, 140, 0, 0.60), 0 0 140px rgba(255, 140, 0, 0.20);
+            }
+        }
+
+        @keyframes glow-ended {
+            0% {
+                text-shadow: 0 0 40px rgba(255, 23, 68, 0.40), 0 0 80px rgba(255, 23, 68, 0.12);
+            }
+            100% {
+                text-shadow: 0 0 80px rgba(255, 23, 68, 0.70), 0 0 160px rgba(255, 23, 68, 0.25);
+            }
+        }
+
+        /* 状态提示文字 */
+        .status-message {
+            margin-top: 16px;
+            font-size: 20px;
+            font-weight: 500;
+            min-height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            transition: all 0.4s ease;
+            letter-spacing: 0.5px;
+        }
+
+        .status-message .status-icon {
+            font-size: 26px;
+        }
+
+        .status-message .status-text {
+            color: rgba(255, 255, 255, 0.75);
+        }
+
+        .status-message .status-text.active-warning {
+            color: #ffab40;
+        }
+
+        .status-message .status-text.active-danger {
+            color: #ff5252;
+        }
+
+        .status-message .status-text.active-normal {
+            color: #80d8ff;
+        }
+
+        /* ===== 信息卡片 ===== */
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px 28px;
+            margin-top: 28px;
+            padding: 24px 28px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .info-item {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            padding: 4px 0;
+        }
+
+        .info-item .label {
+            font-size: 14px;
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.40);
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+        }
+
+        .info-item .value {
+            font-size: 16px;
+            font-weight: 500;
+            color: #eef2ff;
+            letter-spacing: 0.5px;
+        }
+
+        .info-item .value.highlight {
+            color: #80d8ff;
+        }
+
+        /* 课序号输入框 */
+        .info-item .input-course {
+            width: 90px;
+            padding: 4px 10px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 8px;
+            color: #eef2ff;
+            font-size: 16px;
+            font-weight: 500;
+            font-family: inherit;
+            outline: none;
+            transition: all 0.25s ease;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        .info-item .input-course:focus {
+            border-color: rgba(0, 212, 255, 0.50);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.10);
+        }
+
+        .info-item .input-course::placeholder {
+            color: rgba(255, 255, 255, 0.25);
+            font-weight: 300;
+        }
+
+        .info-item .input-course:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* ===== 控制按钮 ===== */
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 18px;
+            margin-top: 28px;
+            flex-wrap: wrap;
+        }
+
+        .controls .btn {
+            padding: 10px 34px;
+            border: none;
+            border-radius: 40px;
+            font-size: 15px;
+            font-weight: 500;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.06);
+            color: rgba(255, 255, 255, 0.70);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .controls .btn:hover:not(:disabled) {
+            background: rgba(255, 255, 255, 0.12);
+            color: #fff;
+            transform: translateY(-1px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.30);
+        }
+
+        .controls .btn:active:not(:disabled) {
+            transform: translateY(0px);
+        }
+
+        .controls .btn:disabled {
+            opacity: 0.30;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .controls .btn-primary {
+            background: rgba(0, 212, 255, 0.15);
+            border-color: rgba(0, 212, 255, 0.25);
+            color: #80d8ff;
+        }
+
+        .controls .btn-primary:hover:not(:disabled) {
+            background: rgba(0, 212, 255, 0.25);
+            border-color: rgba(0, 212, 255, 0.40);
+        }
+
+        .controls .btn-danger {
+            background: rgba(255, 23, 68, 0.12);
+            border-color: rgba(255, 23, 68, 0.20);
+            color: #ff8a9e;
+        }
+
+        .controls .btn-danger:hover:not(:disabled) {
+            background: rgba(255, 23, 68, 0.22);
+            border-color: rgba(255, 23, 68, 0.35);
+        }
+
+        .controls .btn-success {
+            background: rgba(0, 230, 118, 0.10);
+            border-color: rgba(0, 230, 118, 0.18);
+            color: #69db9e;
+        }
+
+        .controls .btn-success:hover:not(:disabled) {
+            background: rgba(0, 230, 118, 0.20);
+            border-color: rgba(0, 230, 118, 0.30);
+        }
+
+        .controls .btn-warning {
+            background: rgba(255, 140, 0, 0.12);
+            border-color: rgba(255, 140, 0, 0.18);
+            color: #ffab40;
+        }
+
+        .controls .btn-warning:hover:not(:disabled) {
+            background: rgba(255, 140, 0, 0.22);
+            border-color: rgba(255, 140, 0, 0.30);
+        }
+
+        /* ===== 响应式 ===== */
+        @media (max-width: 700px) {
+            .dashboard {
+                padding: 28px 20px 32px;
+                border-radius: 32px;
+            }
+
+            .timer-display {
+                font-size: 72px;
+                letter-spacing: 4px;
+            }
+
+            .header-title h1 {
+                font-size: 18px;
+            }
+
+            .header-badge {
+                font-size: 11px;
+                padding: 4px 14px;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+                gap: 8px;
+                padding: 18px 18px;
+            }
+
+            .status-message {
+                font-size: 17px;
+                min-height: 40px;
+            }
+
+            .controls .btn {
+                padding: 8px 24px;
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 450px) {
+            .timer-display {
+                font-size: 52px;
+                letter-spacing: 2px;
+            }
+
+            .dashboard {
+                padding: 20px 14px 24px;
+                border-radius: 24px;
+            }
+
+            .header {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+
+            .info-item .input-course {
+                width: 70px;
+                font-size: 14px;
+            }
+
+            .controls {
+                gap: 10px;
+            }
+
+            .controls .btn {
+                padding: 6px 18px;
+                font-size: 13px;
+            }
+        }
+
+        /* ===== 辅助类 ===== */
+        .text-muted {
+            color: rgba(255, 255, 255, 0.25);
+        }
+    
+        /* ===== 中文信息字体与可编辑字段 ===== */
+        body {
+            font-family: "Microsoft YaHei", "微软雅黑", "PingFang SC",
+                         "Noto Sans CJK SC", "Source Han Sans SC",
+                         "Segoe UI", sans-serif;
+        }
+
+        .header-title h1 {
+            font-size: 26px;
+            font-weight: 800;
+        }
+
+        .timer-label {
+            font-size: 19px;
+            font-weight: 700;
+            letter-spacing: 4px;
+        }
+
+        .timer-display {
+            font-size: 112px;
+            font-weight: 800;
+            letter-spacing: 3px;
+        }
+
+        .status-message {
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .info-item .label {
+            font-size: 17px;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.72);
+        }
+
+        .info-item .value,
+        .info-item .editable-info {
+            font-size: 19px;
+            font-weight: 700;
+            color: #f4f6ff;
+        }
+
+        .editable-info {
+            min-width: 0;
+            width: 100%;
+            padding: 5px 9px;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 8px;
+            outline: none;
+            font-family: inherit;
+            letter-spacing: 0.3px;
+        }
+
+        .editable-info:focus {
+            border-color: rgba(0, 212, 255, 0.75);
+            background: rgba(255, 255, 255, 0.12);
+            box-shadow: 0 0 0 2px rgba(0, 212, 255, 0.12);
+        }
+
+        .editable-info.highlight {
+            color: #80d8ff;
+        }
+
+        .info-item .input-course {
+            width: 150px;
+            font-size: 19px;
+            font-weight: 700;
+        }
+
+        .info-item .input-course::placeholder {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        @media (max-width: 700px) {
+            .timer-display {
+                font-size: 72px;
+            }
+            .header-title h1 {
+                font-size: 21px;
+            }
+            .info-item .label {
+                font-size: 16px;
+            }
+            .info-item .value,
+            .info-item .editable-info {
+                font-size: 17px;
+            }
+        }
+
+        @media (max-width: 450px) {
+            .timer-display {
+                font-size: 48px;
+                letter-spacing: 1px;
+            }
+            .info-item .input-course {
+                width: 125px;
+                font-size: 16px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="dashboard">
+        <!-- ====== 头部 ====== -->
+        <div class="header">
+            <div class="header-title">
+                <span class="icon">📋</span>
+                <h1>考场监考信息</h1>
+            </div>
+            <div class="header-badge">
+                <span class="dot"></span>
+                实时显示
+            </div>
+        </div>
+
+        <!-- ====== 计时器 ====== -->
+        <div class="timer-section">
+            <div class="timer-label">🕒 当前时间</div>
+
+            <div class="timer-display state-normal" id="clockDisplay" aria-live="off">
+                00:00:00
+            </div>
+
+            <div class="status-message" id="statusMessage">
+                <span class="status-icon">📅</span>
+                <span class="status-text active-normal" id="dateDisplay">正在获取日期…</span>
+            </div>
+        </div>
+
+        <!-- ====== 考试信息 ====== -->
+        <div class="info-grid">
+            <div class="info-item">
+                <span class="label">📘 课程编号</span>
+                <input type="text" class="editable-info highlight" id="courseCodeInput" value="B1100030" aria-label="课程编号" autocomplete="off">
+            </div>
+            <div class="info-item">
+                <span class="label">📖 考试科目</span>
+                <input type="text" class="editable-info" id="subjectInput" value="大学英语（2）" aria-label="考试科目" autocomplete="off">
+            </div>
+            <div class="info-item">
+                <span class="label">🔢 课序号 / 课堂号</span>
+                <input
+                type="text"
+                class="input-course editable-info"
+                id="classNumberInput"
+                value="081"
+                maxlength="12"
+                placeholder="请输入课序号/课堂号"
+                aria-label="课序号/课堂号"
+                autocomplete="off"
+                />
+            </div>
+            <div class="info-item">
+                <span class="label">📻 听力频率</span>
+                <span class="value highlight">FM 84.7 兆赫</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            'use strict';
+
+            const clockDisplay = document.getElementById('clockDisplay');
+            const dateDisplay = document.getElementById('dateDisplay');
+
+            function updateClock() {
+                const now = new Date();
+
+                clockDisplay.textContent = new Intl.DateTimeFormat('zh-CN', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: false
+                }).format(now);
+
+                dateDisplay.textContent = new Intl.DateTimeFormat('zh-CN', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    weekday: 'long'
+                }).format(now);
+            }
+
+            updateClock();
+            // Align updates to the next second for a steady live clock.
+            setInterval(updateClock, 250);
+        })();
+    </script>
+
+</body>
+</html>
